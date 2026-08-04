@@ -51,13 +51,6 @@
         <link rel="apple-touch-startup-image" media="screen and (device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/10.2__iPad_portrait.png">
         <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/9.7__iPad_Pro__7.9__iPad_mini__9.7__iPad_Air__9.7__iPad_portrait.png">
         <link rel="apple-touch-startup-image" media="screen and (device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash_screens/8.3__iPad_Mini_portrait.png">
-        <!--Twitter-->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:site" content="@thomasrettig13">
-        <meta name="twitter:creator" content="@thomasrettig13">
-        <meta name="twitter:title" content="Word Counter">
-        <meta name="twitter:description" content="Minimalist word counter by Thomas Rettig. Features dark mode, reading time, offline capability and more!">
-        <meta name="twitter:image" content="https://wort-counter.netlify.app/icon-256x256.png">
         <!--OpenGraph-->
         <meta property="og:title" content="Word Counter">
         <meta property="og:type" content="website">
@@ -88,7 +81,6 @@
                         </div>
                         <label for="fontSlider">Font size: <span id="fontSizeValue">16</span>px</label>
                         <input type="range" min="16" max="22" value="16" id="fontSlider" step="2" aria-label="Adjust font size from 16 to 22 pixels">
-                        <button id="share" aria-label="Share this application"><img src="share.svg" draggable="false" alt="" aria-hidden="true">Share</button>
                         <button id="install" aria-label="Install this application as a PWA"><img src="install.svg" draggable="false" alt="" aria-hidden="true">Install app</button>
                     </div>
                 </div>
@@ -96,36 +88,14 @@
         <textarea id="textarea" placeholder="Type here…" tabindex="1" aria-label="Enter text here to evaluate word count"></textarea>
     </main>
     <footer>
-        <p><a href="https://github.com/ThomasRettig/word-counter" target="_blank" rel="noreferrer">Github source code</a> • <a href="https://twitter.com/thomasrettig13" target="_blank" rel="noreferrer">@thomasrettig13</a></p>
+        <p><a href="https://github.com/ThomasRettig/word-counter" target="_blank" rel="noreferrer">Github source code</a></p>
     </footer>
     <script>
         if (navigator && navigator.serviceWorker) {
             navigator.serviceWorker.register('sw.js');
         };
-
-        document.getElementById("share").addEventListener('click', () => {
-            navigator.share({
-                title: 'Word Counter',
-                text: 'A simple word counter by Thomas Rettig',
-                url: window.location.href
-            })
-        });
-
-        let deferredPrompt;
-        const addBtn = document.getElementById('install');
-        addBtn.style.display = 'none';
-        window.addEventListener('beforeinstallprompt', (e) => {
-            deferredPrompt = e;
-            addBtn.style.display = 'block';
-            addBtn.addEventListener('click', (e) => {
-                addBtn.style.display = 'none';
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    deferredPrompt = null;
-                });
-            });
-        });
     </script>
     <script src="js/scripts.js" async></script>
+    <script src="install-prompt.js" defer></script>
 </body>
 </html>

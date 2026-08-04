@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `word-counter-${CACHE_VERSION}`;
 
 const ASSETS_TO_CACHE = [
@@ -6,10 +6,12 @@ const ASSETS_TO_CACHE = [
   './index.html',
   './js/scripts.js',
   './css/styles.css',
+  './offline.html',
   './icon-256x256.svg',
   './icon-256x256.png',
+  './icon-192x192.png',
+  './icon-512x512.png',
   './install.svg',
-  './share.svg',
   './settings.svg',
   './manifest.webmanifest',
   './fonts/Inter-Bold.woff2',
@@ -54,9 +56,11 @@ self.addEventListener('fetch', (event) => {
         return response;
       }
       return fetch(event.request).catch(() => {
-        // Return offline page for navigation requests if needed
+        // Return offline page for navigation requests when offline
         if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
+          return caches.match('./offline.html').then((offlineResponse) => {
+            return offlineResponse || caches.match('./index.html');
+          });
         }
       });
     })
