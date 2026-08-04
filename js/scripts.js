@@ -6,30 +6,26 @@ if (localStorage.getItem('textValue')) {
 };
 
 const trackText = e => {
-    let words = e.target.value.split(/\s/g);
-    if (words[words.length - 1] === '') {
-        words.pop();
-    }
-    document.getElementById('words').innerHTML = words.length;
-    document.getElementById('chars').innerHTML = e.target.value.replace(/\s/g, '').length;
-    document.getElementById('charsWhitespace').innerHTML = e.target.value.length;
+    const text = e.target.value;
+    const words = text.trim() === '' ? [] : text.trim().split(/\s+/);
+    document.getElementById('words').textContent = words.length;
+    document.getElementById('chars').textContent = text.replace(/\s/g, '').length;
+    document.getElementById('charsWhitespace').textContent = text.length;
     document.title = `Word count: ${words.length}`;
-    localStorage.setItem('textValue', e.target.value);
+    localStorage.setItem('textValue', text);
+    calculateReadingTime();
+    updateCount();
 };
 
 textarea.addEventListener('input', trackText);
 
 // from https://codepen.io/balasubramanim/pen/xypRMP
 
-window.readingTime = ev => {
+const calculateReadingTime = () => {
     const wordsPerMinute = 240;
-    let result;
-    let textLength = ev.value.split(' ').length;
-    if (textLength > 0) {
-        let value = Math.ceil(textLength / wordsPerMinute);
-        result = `${value} min`;
-    }
-    document.getElementById('readingTime').innerText = result;
+    const textLength = textarea.value.trim().split(/\s+/).filter(word => word.length > 0).length;
+    const result = textLength > 0 ? `${Math.ceil(textLength / wordsPerMinute)} min` : '0 min';
+    document.getElementById('readingTime').textContent = result;
 };
 
 // toggle monospaced font
@@ -47,16 +43,14 @@ document.getElementById('fontSlider').addEventListener('input', function() {
 });
 
 // make textarea resize height automatically
-const tx = document.getElementsByTagName('textarea');
-for (let i = 0; i < tx.length; i++) {
-    tx[i].setAttribute('style', `height: ${(tx[i].scrollHeight)}px; overflow-y: hidden;`);
-    tx[i].addEventListener('input', OnInput, false);
-}
+const autoResizeTextarea = () => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+};
 
-function OnInput() {
-    this.style.height = 'auto';
-    this.style.height = `${(this.scrollHeight)}px`;
-}
+textarea.addEventListener('input', autoResizeTextarea);
+// Initial resize on page load
+autoResizeTextarea();
 
 /**
  * Calculate byte size of a text snippet
@@ -109,32 +103,19 @@ function OnInput() {
 
 })();
 
-var isWin = navigator.platform.indexOf('Win') === 0,
-    $ = function(id) {
-        return document.getElementById(id);
-    },
-    $attach = function(obj, props, agressive) {
-        for (var prop in props) {
-            if (agressive || !(prop in obj) || obj[prop] === undefined) {
-                obj[prop] = props[prop];
-            }
-        }
+const isWin = navigator.platform.indexOf('Win') === 0;
 
-        return obj;
-    };
+const updateCount = () => {
+    const text = textarea.value;
+    const results = document.getElementById('results');
+    const sizeUnix = ByteSize.format(ByteSize.count(text));
+    const sizeWin = ByteSize.format(ByteSize.count(text, {
+        lineBreaks: 2
+    }));
 
-updateCount = function() {
-    var text = textarea.value;
-    var results = document.getElementById('results');
-    var sizeUnix = ByteSize.format(ByteSize.count(text)),
-        sizeWin = ByteSize.format(ByteSize.count(text, {
-            lineBreaks: 2
-        }));
-
-    results.innerHTML = (isWin ? sizeWin : sizeUnix);
+    results.textContent = (isWin ? sizeWin : sizeUnix);
 };
 
-textarea.oninput = function(evt) {
-    updateCount();
-    return false;
-};
+// Initialize reading time on page load
+calculateReadingTime();
+updateCount();
