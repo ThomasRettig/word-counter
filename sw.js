@@ -1,37 +1,64 @@
-var CACHE = "cache-v1";
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = `word-counter-${CACHE_VERSION}`;
 
-var urls = [
-  "/",
-  "js/scripts.js",
-  "css/styles.css",
-  "icon-256x256.svg",
-  "icon-256x256.png",
-  "install.svg",
-  "share.svg",
-  "settings.svg",
-  "sw.js",
-  "manifest.webmanifest",
-  "fonts/Inter-Bold.woff2",
-  "fonts/Inter-Regular.woff2",
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './js/scripts.js',
+  './css/styles.css',
+  './icon-256x256.svg',
+  './icon-256x256.png',
+  './install.svg',
+  './share.svg',
+  './settings.svg',
+  './manifest.webmanifest',
+  './fonts/Inter-Bold.woff2',
+  './fonts/Inter-Regular.woff2',
 ];
 
-self.addEventListener("install", function (event) {
-  // Perform install steps
+// Install event - cache assets
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then(function (cache) {
-      return cache.addAll(urls);
-    }),
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Caching assets');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
+  // Force activation of new service worker
+  self.skipWaiting();
 });
 
-self.addEventListener("fetch", function (event) {
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name.startsWith('word-counter-') && name !== CACHE_NAME)
+          .map((name) => {
+            console.log('[Service Worker] Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      );
+    })
+  );
+  // Claim all clients immediately
+  self.clients.claim();
+});
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then(function (response) {
-      // Cache hit - return response
+    caches.match(event.request).then((response) => {
       if (response) {
         return response;
       }
-      return fetch(event.request);
-    }),
+      return fetch(event.request).catch(() => {
+        // Return offline page for navigation requests if needed
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      });
+    })
   );
 });
