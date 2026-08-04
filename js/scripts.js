@@ -5,6 +5,10 @@ if (localStorage.getItem('textValue')) {
     textarea.value = localStorage.getItem('textValue');
 };
 
+// Font size slider with value display
+const fontSlider = document.getElementById('fontSlider');
+const fontSizeValue = document.getElementById('fontSizeValue');
+
 const trackText = e => {
     const text = e.target.value;
     const words = text.trim() === '' ? [] : text.trim().split(/\s+/);
@@ -38,8 +42,12 @@ document.getElementById('toggleFont').addEventListener('change', function() {
 });
 
 // font size slider
-document.getElementById('fontSlider').addEventListener('input', function() {
-    document.getElementById('textarea').style.fontSize = `${this.value}px`;
+fontSlider.addEventListener('input', function() {
+    const size = `${this.value}px`;
+    document.getElementById('textarea').style.fontSize = size;
+    if (fontSizeValue) {
+        fontSizeValue.textContent = this.value;
+    }
 });
 
 // make textarea resize height automatically

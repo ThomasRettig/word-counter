@@ -67,6 +67,7 @@
         <meta property="og:image" content="https://wort-counter.netlify.app/icon-256x256.png">
     </head>
     <body>
+        <a href="#textarea" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Skip to main content</a>
         <h1>Word Counter</h1>
         <main>
             <div class="counters">
@@ -85,9 +86,10 @@
                         <div class="flex">
                             <input type="checkbox" id="toggleFont"><label for="toggleFont">Monospace font</label>
                         </div>
-                        <label for="fontSlider">Font size</label><input type="range" min="16" max="22" value="0" id="fontSlider" step="2">
-                        <button id="share"><img src="share.svg" draggable="false" alt="Share icon" aria-hidden="true">Share</button>
-                        <button id="install"><img src="install.svg" draggable="false" alt="Install icon" aria-hidden="true">Install app</button>
+                        <label for="fontSlider">Font size: <span id="fontSizeValue">16</span>px</label>
+                        <input type="range" min="16" max="22" value="16" id="fontSlider" step="2" aria-label="Adjust font size from 16 to 22 pixels">
+                        <button id="share" aria-label="Share this application"><img src="share.svg" draggable="false" alt="" aria-hidden="true">Share</button>
+                        <button id="install" aria-label="Install this application as a PWA"><img src="install.svg" draggable="false" alt="" aria-hidden="true">Install app</button>
                     </div>
                 </div>
         </div>
