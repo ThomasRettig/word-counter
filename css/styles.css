@@ -22,6 +22,7 @@
   --dim-black: #131313;
   --dim-white: #ddd;
   --dim-gray: #161616;
+  --transition-speed: 0.3s;
 }
 
 ::selection {
@@ -40,9 +41,10 @@ html {
 
 body {
   accent-color: #555;
-  margin: 5vw;
+  margin: clamp(1rem, 5vw, 3rem);
   padding: 0;
   max-width: 95%;
+  transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 h1 {
@@ -60,11 +62,14 @@ textarea {
   min-height: 60vh;
   padding: 1rem;
   height: auto;
+  width: 100%;
+  transition: border-color var(--transition-speed), background-color var(--transition-speed);
 }
 
 textarea:focus {
   outline: none;
   border-color: #ccc;
+  box-shadow: 0 0 0 3px rgba(204, 204, 204, 0.3);
 }
 
 p, button, br, input {
@@ -73,10 +78,51 @@ p, button, br, input {
 
 input[type="checkbox"] {
   cursor: pointer;
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 input[type="range"] {
   cursor: ew-resize;
+  min-height: 44px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--icon-color);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--icon-color);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+input[type="range"]:focus {
+  outline: none;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .info {
@@ -110,7 +156,20 @@ button {
   border: none;
   color: inherit;
   font: inherit;
-  padding: 0;
+  padding: 8px 12px;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 4px;
+  transition: background-color var(--transition-speed);
+}
+
+button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 #buttons {
@@ -148,6 +207,29 @@ img {
   height: auto;
   vertical-align: bottom;
   margin-right: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.skip-link:focus {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  padding: 8px 16px;
+  background: var(--accent-color);
+  color: white;
+  z-index: 9999;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 footer > p {
@@ -208,11 +290,6 @@ a {
     margin-bottom: 15px;
   }
 
-  /* cheap hack to fix mobile bug */
-  img {
-    filter: invert(1);
-  }
-
   input[type="range"] {
     width: 100%;
   }
@@ -264,20 +341,12 @@ a {
   html {
     -webkit-font-smoothing: antialiased;
   }
-
-  img {
-    filter: invert(1);
-  }
 }
 
 @media screen and (prefers-color-scheme: dark) {
   ::selection {
     background-color: var(--dim-white);
     color: var(--dim-black);
-  }
-
-  * {
-    color: #ccc;
   }
 
   html {
@@ -301,9 +370,14 @@ a {
   textarea:focus {
     outline: none;
     border-color: #aaa;
+    box-shadow: 0 0 0 3px rgba(170, 170, 170, 0.3);
   }
 
   .dialog-content {
     background-color: var(--dim-gray);
+  }
+
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
   }
 }
