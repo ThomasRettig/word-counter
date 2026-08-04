@@ -5,6 +5,22 @@ if (localStorage.getItem('textValue')) {
     textarea.value = localStorage.getItem('textValue');
 };
 
+// Auto-save indicator
+const saveIndicator = document.createElement('span');
+saveIndicator.id = 'saveIndicator';
+saveIndicator.textContent = '✓ Saved';
+saveIndicator.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#4caf50;color:white;padding:8px 16px;border-radius:4px;font-size:14px;opacity:0;transition:opacity 0.3s;z-index:1000;';
+document.body.appendChild(saveIndicator);
+
+let saveTimeout;
+const showSaveIndicator = () => {
+    saveIndicator.style.opacity = '1';
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        saveIndicator.style.opacity = '0';
+    }, 2000);
+};
+
 // Font size slider with value display
 const fontSlider = document.getElementById('fontSlider');
 const fontSizeValue = document.getElementById('fontSizeValue');
@@ -17,11 +33,33 @@ const trackText = e => {
     document.getElementById('charsWhitespace').textContent = text.length;
     document.title = `Word count: ${words.length}`;
     localStorage.setItem('textValue', text);
+    showSaveIndicator();
     calculateReadingTime();
     updateCount();
 };
 
 textarea.addEventListener('input', trackText);
+
+// Clear text button with confirmation
+const clearBtn = document.createElement('button');
+clearBtn.id = 'clearBtn';
+clearBtn.innerHTML = '<img src="settings.svg" draggable="false" alt="" aria-hidden="true">Clear text';
+clearBtn.style.cssText = 'background:none;border:1px solid #ccc;padding:8px 16px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px;';
+clearBtn.setAttribute('aria-label', 'Clear all text from the editor');
+
+clearBtn.addEventListener('click', () => {
+    if (textarea.value.trim() === '') {
+        return;
+    }
+    if (confirm('Are you sure you want to clear all text? This action cannot be undone.')) {
+        textarea.value = '';
+        localStorage.removeItem('textValue');
+        trackText({ target: textarea });
+        textarea.focus();
+    }
+});
+
+document.getElementById('buttons').appendChild(clearBtn);
 
 // from https://codepen.io/balasubramanim/pen/xypRMP
 
