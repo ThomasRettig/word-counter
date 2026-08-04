@@ -43,8 +43,8 @@ textarea.addEventListener('input', trackText);
 // Clear text button with confirmation
 const clearBtn = document.createElement('button');
 clearBtn.id = 'clearBtn';
-clearBtn.innerHTML = '<img src="settings.svg" draggable="false" alt="" aria-hidden="true">Clear text';
-clearBtn.style.cssText = 'background:none;border:1px solid #ccc;padding:8px 16px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px;';
+clearBtn.innerHTML = '<img src="trash.svg" draggable="false" alt="" aria-hidden="true">Clear text';
+clearBtn.style.cssText = 'background:none;border:1px solid var(--dim-white);padding:10px 16px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px;min-height:44px;transition:background-color var(--transition-speed),border-color var(--transition-speed);';
 clearBtn.setAttribute('aria-label', 'Clear all text from the editor');
 
 clearBtn.addEventListener('click', () => {

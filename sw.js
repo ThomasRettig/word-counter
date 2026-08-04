@@ -12,7 +12,7 @@ const ASSETS_TO_CACHE = [
   './icon-192x192.png',
   './icon-512x512.png',
   './install.svg',
-  './settings.svg',
+  './trash.svg',
   './manifest.webmanifest',
   './fonts/Inter-Bold.woff2',
   './fonts/Inter-Regular.woff2',
