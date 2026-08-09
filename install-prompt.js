@@ -1,19 +1,35 @@
 // PWA Install Prompt Education Modal
 let deferredPrompt;
 const installBtn = document.getElementById('install');
+installBtn.hidden = true;
+installBtn.disabled = true;
 
 // Check if user has been shown install prompt before
 const hasSeenInstallPrompt = localStorage.getItem('hasSeenInstallPrompt');
 
+const showInstallButton = () => {
+    installBtn.hidden = false;
+    installBtn.disabled = false;
+};
+
+const hideInstallButton = () => {
+    installBtn.hidden = true;
+    installBtn.disabled = true;
+};
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    showInstallButton();
     
     // Show install button only if user hasn't dismissed it before
     if (!hasSeenInstallPrompt) {
         // Create education modal
         const modal = document.createElement('div');
         modal.id = 'installEducationModal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'installEducationModalTitle');
         modal.style.cssText = `
             position: fixed;
             top: 0;
@@ -40,7 +56,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
         `;
         
         modalContent.innerHTML = `
-            <h2 style="margin-top: 0; font-size: 1.5rem;">Install Word Counter</h2>
+            <h2 id="installEducationModalTitle" style="margin-top: 0; font-size: 1.5rem;">Install Word Counter</h2>
             <p style="margin: 1rem 0;">Get quick access to Word Counter right from your home screen. Works offline!</p>
             <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
                 <button id="dismissInstall" style="
@@ -66,12 +82,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
         
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
+
+        const dismissInstallModal = () => {
+            localStorage.setItem('hasSeenInstallPrompt', 'true');
+            modal.remove();
+            installBtn.focus();
+        };
         
         // Handle dismiss
         document.getElementById('dismissInstall').addEventListener('click', () => {
-            localStorage.setItem('hasSeenInstallPrompt', 'true');
-            modal.remove();
-            installBtn.style.display = 'none';
+            dismissInstallModal();
         });
         
         // Handle confirm
@@ -79,10 +99,22 @@ window.addEventListener('beforeinstallprompt', (e) => {
             modal.remove();
             showInstallPrompt();
         });
-        
-        installBtn.style.display = 'block';
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                dismissInstallModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && document.body.contains(modal)) {
+                dismissInstallModal();
+            }
+        });
+
+        document.getElementById('confirmInstall').focus();
     } else {
-        installBtn.style.display = 'block';
+        showInstallButton();
     }
 });
 
@@ -92,11 +124,12 @@ const showInstallPrompt = () => {
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
                 console.log('User accepted the install prompt');
+                hideInstallButton();
             } else {
                 console.log('User dismissed the install prompt');
+                hideInstallButton();
             }
             deferredPrompt = null;
-            installBtn.style.display = 'none';
         });
     }
 };
@@ -105,6 +138,6 @@ installBtn.addEventListener('click', showInstallPrompt);
 
 // Hide install button after successful installation
 window.addEventListener('appinstalled', () => {
-    installBtn.style.display = 'none';
+    hideInstallButton();
     localStorage.setItem('hasSeenInstallPrompt', 'true');
 });
